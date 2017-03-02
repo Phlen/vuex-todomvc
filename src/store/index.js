@@ -26,8 +26,11 @@ export default new Vuex.Store({
     },
 
     editTodo: (state, { todo, value }) => {
-      console.log('here')
       todo.text = value
+    },
+
+    clearCompleted: (state) => {
+      state.todos = state.todos.filter(todo => !todo.done)
     }
   }
 })
