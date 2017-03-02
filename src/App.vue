@@ -10,57 +10,52 @@
 </style>
 <template>
   <section class="todoapp">
-    <header class="header">
-      <h1>todos</h1>
-      <input type="text"
-        class="new-todo"
-        autofocus
-        placeholder="what nedds to be done?"
-        @keyup.enter="addTodo">
-    </header>
-    <section class="main" v-if="todos.length">
-      <input type="chexkbox"
+    <todo-header></todo-header>
+    <section class="main" v-show="todos.length">
+      <input type="checkbox"
         class="toggle-all"
         :checked="allChecked"
-        @change="toggleAll({ done: !allChecked })">
-        <ul class="todo-list">
-          <Todo v-for="(todo, index) in filteredTodos" :key="index" :todo="todo"></Todo>
-        </ul>
-    </section>
-    <footer class="footer" v-show="todos.length">
-      <span class="todo-count">
-         <strong>{{remaining}}</strong>
-         {{ remaining | pluralize('item')}} left
-      </span>
-      <ul class="filters">
-        <li v-for="(val, key) in filters">
-          <a href="javascript:void(0);"
-            :class="{ selected: visibility === key}"
-            @click="visibility = key">
-            {{ key | capitalize }}
-          </a>
-        </li>
+        @change="toggleAll({ done: !allChecked})">
+      <ul class="todo-list">
+        <Todo v-for="(todo, index) in filteredTodos" :key="index" :todo="todo"></Todo>
       </ul>
-      <button class="clear-completed" v-show="todos.length"
-        @click="clearCompleted">
-        Clear completed
-      </button>
-    </footer>
+    </section>
+      <footer class="footer">
+        <span class="todo-count">
+          <strong>{{ remaining }}</strong>
+          {{ remaining | pluralize('item') }} left
+        </span>
+        <ul class="filters">
+          <li v-for="(val, key) in filters">
+            <a href="javascript:void(0);"
+              :class="{selected: visibility === key}"
+              @click="visibility = key">
+              {{ key | capitalize }}
+            </a>
+          </li>
+        </ul>
+        <button class="clear-completed"
+          v-show="todos.length"
+          @click="clearCompleted">Clear completed</button>
+      </footer>
   </section>
 </template>
 
 <script>
   import { mapMutations } from 'vuex'
-  import Todo from './components/todo.vue'
+  import Header from './components/header'
+  import Todo from './components/todo'
 
   const filters = {
     all: todos => todos,
-    active: todos => todos.filter(todo => !todo.done),
-    completed: todos => todos.filter(todo => todo.done)
+    completed: todos => todos.filter(todo => todo.done),
+    active: todos => todos.filter(todo => !todo.done)
   }
-
   export default {
-    components: { Todo },
+    components: {
+      'todo-header': Header,
+      'Todo': Todo
+    },
     data () {
       return {
         visibility: 'all',
@@ -72,25 +67,21 @@
       todos () {
         return this.$store.state.todos
       },
-      allChecked () {
-        return this.todos.every(todo => todo.done)
-      },
+
       filteredTodos () {
         return filters[this.visibility](this.todos)
       },
+
       remaining () {
         return this.todos.filter(todo => !todo.done).length
+      },
+
+      allChecked () {
+        return this.todos.every(todo => todo.done)
       }
     },
 
     methods: {
-      addTodo (e) {
-        let text = e.target.value
-        if (text.trim()) {
-          this.$store.commit('addTodo', { text })
-        }
-        e.target.value = ''
-      },
       ...mapMutations([
         'toggleAll',
         'clearCompleted'

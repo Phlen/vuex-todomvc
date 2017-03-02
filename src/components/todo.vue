@@ -1,18 +1,19 @@
 
 <template>
-  <li class="todo"  :class="{ completed: todo.done, editing: editing }">
+  <li class="todo" :class="{ completed: todo.done, editing: editing}">
     <div class="view">
       <input type="checkbox"
         class="toggle"
         :checked="todo.done"
-        @change="toggleTodo({ todo: todo })">
+        @change="toggleTodo({todo: todo})">
       <label v-text="todo.text" @dblclick="editing = true"></label>
-      <button class="destroy" @click="deleteTodo({ todo: todo })"></button>
+      <button class="destroy"
+        @click="deleteTodo({todo: todo})"></button>
     </div>
-    <input type="text"
-      class="edit"
+    <input class="edit"
       v-show="editing"
       v-focus="editing"
+      :value="todo.text"
       @keyup.enter="doneEdit"
       @keyup.esc="cancelEdit"
       @blur="doneEdit">
@@ -23,14 +24,13 @@
   import { mapMutations } from 'vuex'
 
   export default {
-    name: 'Todo',
+    name: 'todo',
     props: ['todo'],
     data () {
       return {
         editing: false
       }
     },
-
     directives: {
       focus (el, { value }, { context }) {
         if (value) {
@@ -40,31 +40,27 @@
         }
       }
     },
-
     methods: {
       ...mapMutations([
-        'editTodo',
         'toggleTodo',
-        'deleteTodo'
+        'deleteTodo',
+        'editTodo'
       ]),
 
       doneEdit (e) {
-        const value = e.target.value.trim()
+        let value = e.target.value.trim()
         const { todo } = this
         if (!value) {
-          this.deleteTodo({ todo })
+          this.deleteTodo({
+            todo
+          })
         } else if (this.editing) {
           this.editTodo({
             todo,
             value
           })
+          this.editing = false
         }
-        this.editing = false
-      },
-
-      cancelEdit (e) {
-        e.target.value = this.todo.text
-        this.editing = false
       }
     }
   }

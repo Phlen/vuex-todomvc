@@ -2,10 +2,15 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
 
-const TODO_LIST_STORAGE_KEY = 'todo-list'
+// for testing
+if (navigator.userAgent.indexOf('PhantomJS') > -1) {
+  window.localStorage.clear()
+}
+
+// const TODO_LIST_STORAGE_KEY = 'todo-list'
 export default new Vuex.Store({
   state: {
-    todos: JSON.parse(window.localStorage.getItem(TODO_LIST_STORAGE_KEY) || '[]')
+    todos: []
   },
 
   mutations: {
@@ -17,16 +22,22 @@ export default new Vuex.Store({
       })
     },
 
-    deleteTodo: (state, { todo }) => {
-      state.todos.splice(state.todos.indexOf(todo), 1)
-    },
-
     toggleTodo: (state, { todo }) => {
       todo.done = !todo.done
     },
 
+    deleteTodo: (state, { todo }) => {
+      state.todos.splice(state.todos.indexOf(todo), 1)
+    },
+
     editTodo: (state, { todo, value }) => {
       todo.text = value
+    },
+
+    toggleAll: (state, {done}) => {
+      state.todos.forEach(todo => {
+        todo.done = done
+      })
     },
 
     clearCompleted: (state) => {
