@@ -20,7 +20,7 @@
         <Todo v-for="(todo, index) in filteredTodos" :key="index" :todo="todo"></Todo>
       </ul>
     </section>
-      <footer class="footer">
+      <footer class="footer" v-show="todos.length">
         <span class="todo-count">
           <strong>{{ remaining }}</strong>
           {{ remaining | pluralize('item') }} left
