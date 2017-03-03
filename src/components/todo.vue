@@ -61,6 +61,10 @@
           })
           this.editing = false
         }
+      },
+      cancelEdit (e) {
+        e.target.value = this.todo.text
+        this.editing = false
       }
     }
   }
